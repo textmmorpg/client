@@ -13,6 +13,8 @@ import {
 } from 'grommet';
 import { FormClose, Notification } from 'grommet-icons';
 import './App.css';
+import { GoogleLogin } from '@react-oauth/google';
+
 
 const theme = {
   global: {
@@ -82,6 +84,19 @@ function App() {
     );
   }
 
+  const LoginPage = () => {
+    //setShow(false) on successful login
+
+    return <GoogleLogin
+      onSuccess={credentialResponse => {
+        console.log(credentialResponse);
+      }}
+      onError={() => {
+        console.log('Login Failed');
+      }}
+    />;
+  }
+
   return (
     <Grommet theme={theme} full>
       <ResponsiveContext.Consumer>
@@ -96,7 +111,7 @@ function App() {
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
                 <Box fill>
-                  {/* <LoginPage /> */}
+                    {LoginPage()}
                   <Box fill overflow={{vertical: "scroll"}}>
                     {Messages()}
                     <div ref={bottomRef} />

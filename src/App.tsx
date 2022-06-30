@@ -2,16 +2,14 @@ import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   Box,
   Button,
-  Collapsible,
   Heading,
   Grommet,
-  Layer,
-  ResponsiveContext,
   TextInput,
   Text,
-  BoxExtendedProps
+  BoxExtendedProps,
+  Nav
 } from 'grommet';
-import { FormClose, Notification } from 'grommet-icons';
+import { Notes, Github } from 'grommet-icons';
 import './App.css';
 import { GoogleLogin } from '@react-oauth/google';
 import { AlignSelfType } from "grommet/utils";
@@ -45,7 +43,6 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 );
 
 function App() {
-  const [showSidebar, setShowSidebar] = useState<boolean>();
   const [value, setValue] = useState<string>();
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
@@ -64,7 +61,7 @@ function App() {
       message: "This is a multiplayer text adventure game! " +
         "Type commands to interact with the world and other players. " +
         "For example, type 'walk forward' to walk, 'turn right' to turn, etc. " +
-        "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to" +
+        "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to " +
         "examine your immediate environment. Sign in to get started!",
       align:'start'
     }]));
@@ -122,70 +119,29 @@ function App() {
 
   return (
     <Grommet theme={theme} full>
-      <ResponsiveContext.Consumer>
-        {size => (
-          <Box fill>
-            <AppBar>
-              <Heading level='3' margin='none'>TextMMO</Heading>
-              <Button
-                icon={<Notification />}
-                onClick={() => setShowSidebar(!showSidebar)}
-              />
-              </AppBar>
-              <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
-                <Box>
-                  <Box flex direction='column' overflow={{vertical: "scroll"}}>
-                    <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
-                      {LoginPage()}
-                    </Box>
-                    {Messages()}
-                    <div ref={bottomRef} />
-                  </Box>
-                  <Box as="footer" flex={false} pad={{horizontal: "medium", vertical: "large"}}>
-                    {InputBox()}
-                  </Box>
+        <Box fill>
+          <AppBar>
+            <Heading level='3' margin='none'>TextMMO</Heading>
+            <Nav direction='row'>
+              <Button tip='source code' alignSelf='end' icon={<Github />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
+              <Button tip='documentation' alignSelf='end' icon={<Notes />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
+            </Nav>
+          </AppBar>
+          <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
+            <Box>
+              <Box flex direction='column' overflow={{vertical: "scroll"}}>
+                <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
+                  {LoginPage()}
                 </Box>
-                {(!showSidebar || size !== 'small') ? (
-                  <Collapsible direction="horizontal" open={showSidebar}>
-                  <Box
-                    flex
-                    width='medium'
-                    background='light-2'
-                    elevation='small'
-                    align='center'
-                    justify='center'
-                  >
-                    sidebar
-                  </Box>
-                  </Collapsible>
-                 ): (
-                  <Layer>
-                     <Box
-                      background='light-2'
-                      tag='header'
-                      justify='end'
-                      align='center'
-                      direction='row'
-                    >
-                      <Button
-                        icon={<FormClose />}
-                        onClick={() => setShowSidebar(false)}
-                      />
-                    </Box>
-                    <Box
-                      fill
-                      background='light-2'
-                      align='center'
-                      justify='center'
-                    >
-                      sidebar
-                    </Box>
-                  </Layer>
-                 )}
+                {Messages()}
+                <div ref={bottomRef} />
               </Box>
+              <Box as="footer" flex={false} pad={{horizontal: "medium", vertical: "large"}}>
+                {InputBox()}
+              </Box>
+            </Box>
           </Box>
-        )}
-      </ResponsiveContext.Consumer>
+        </Box>
     </Grommet>
   );
 }

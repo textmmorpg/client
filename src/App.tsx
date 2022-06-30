@@ -8,12 +8,13 @@ import {
   Layer,
   ResponsiveContext,
   TextInput,
-  Tag,
+  Text,
   BoxExtendedProps
 } from 'grommet';
 import { FormClose, Notification } from 'grommet-icons';
 import './App.css';
 import { GoogleLogin } from '@react-oauth/google';
+import { AlignSelfType } from "grommet/utils";
 
 
 const theme = {
@@ -46,19 +47,41 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 function App() {
   const [showSidebar, setShowSidebar] = useState<boolean>();
   const [value, setValue] = useState<string>();
-  const bottomRef = useRef(null);
-  const [messages, setMessages] = useState<Array<{ name: string, message: string }>>(() => {
+  const bottomRef = useRef<null | HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
     return [];
   });
+
+  useEffect(() => {
+    // scroll to bottom every time messages change
+    bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+  }, [messages]);
+
+  // add intro message
+  if(messages.length === 0) {
+    setMessages(messages.concat([{
+      name:'Server',
+      message: "This is a multiplayer text adventure game! " +
+        "Type commands to interact with the world and other players. " +
+        "For example, type 'walk forward' to walk, 'turn right' to turn, etc. " +
+        "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to" +
+        "examine your immediate environment. Sign in to get started!",
+      align:'start'
+    }]));
+  }
 
   const Messages = () => {
     var ret;
     if(messages === undefined) return;
     for(var i = 0; i < messages.length; i++) {
       ret = [ret,
-        <Box key={i} pad={{horizontal: "xlarge", top: "large"}}>
-          <Tag name={messages[i]['name']} value={messages[i]["message"]} />
-        </Box>
+        <Heading level={3} alignSelf={messages[i]["align"] || 'start'} margin={{vertical: 'medium', horizontal: 'xlarge'}}>
+          {messages[i]["name"]}
+        </Heading>
+        ,
+        <Text key={i} alignSelf={messages[i]["align"] || 'start'} margin={{vertical: 'medium', horizontal: 'xlarge'}}>
+          {messages[i]["message"]}
+        </Text>
       ];
     }
     return ret;
@@ -68,7 +91,7 @@ function App() {
     const handleKeyDown = (event: { key: string; }) => {
       if(messages === undefined) return;
       if (event.key === 'Enter') {
-        setMessages(messages.concat([{name: "You", message: value || ''}]));
+        setMessages(messages.concat([{name: "You", message: value || '', align: 'end'}]));
         setValue('');
       }
     }
@@ -110,13 +133,15 @@ function App() {
               />
               </AppBar>
               <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
-                <Box fill>
-                    {LoginPage()}
-                  <Box fill overflow={{vertical: "scroll"}}>
+                <Box>
+                  <Box flex direction='column' overflow={{vertical: "scroll"}}>
+                    <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
+                      {LoginPage()}
+                    </Box>
                     {Messages()}
                     <div ref={bottomRef} />
                   </Box>
-                  <Box as="footer" flex={false} pad={{horizontal: "medium", bottom: "large"}}>
+                  <Box as="footer" flex={false} pad={{horizontal: "medium", vertical: "large"}}>
                     {InputBox()}
                   </Box>
                 </Box>

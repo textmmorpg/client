@@ -12,9 +12,7 @@ import {
 } from 'grommet';
 import { Notes, Github } from 'grommet-icons';
 import './App.css';
-import { GoogleLogin } from '@react-oauth/google';
 import { AlignSelfType } from "grommet/utils";
-
 
 const theme = {
   global: {
@@ -106,19 +104,6 @@ function App() {
     );
   }
 
-  const LoginPage = () => {
-    //setShow(false) on successful login
-
-    return <GoogleLogin
-      onSuccess={credentialResponse => {
-        console.log(credentialResponse);
-      }}
-      onError={() => {
-        console.log('Login Failed');
-      }}
-    />;
-  }
-
   return (
     <Grommet theme={theme}>
       <Layer full={true} modal={false} animate={false} background='background'>
@@ -130,9 +115,6 @@ function App() {
           </Nav>
         </AppBar>
         <Box fill direction='column' overflow={{vertical: "scroll"}}>
-          {/* <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
-            {LoginPage()}
-          </Box> */}
           {Messages()}
           <div ref={bottomRef} />
         </Box>

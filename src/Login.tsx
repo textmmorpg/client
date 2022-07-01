@@ -1,46 +1,43 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   Box,
-  Button,
-  Heading,
+  Page,
+  PageContent,
   Grommet,
-  TextInput,
+  Layer,
   Text,
-  BoxExtendedProps,
-  Nav,
-  Layer
+  Heading,
+  PageHeader,
+  Anchor,
+  Button,
+  Image
 } from 'grommet';
-import { Notes, Github } from 'grommet-icons';
 import './App.css';
 import { GoogleLogin } from '@react-oauth/google';
-import { AlignSelfType } from "grommet/utils";
 
 
 const theme = {
-  global: {
-    colors: {
-      brand: '#228BE6'
+    global: {
+      colors: {
+        brand: '#809bce',
+        background: '#809bce',
+        placeholder: '#000000'
+      },
+      font: {
+        size: '18px',
+        height: '20px',
+      },
     },
-    font: {
-      family: 'Roboto',
-      size: '18px',
-      height: '20px',
-    },
-  },
 };
 
 function Login() {
-  const [value, setValue] = useState<string>();
-  const bottomRef = useRef<null | HTMLDivElement>(null);
-  const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
-    return [];
-  });
 
 
   const LoginPage = () => {
     //setShow(false) on successful login
 
     return <GoogleLogin
+      theme={'filled_blue'}
       onSuccess={credentialResponse => {
         console.log(credentialResponse);
       }}
@@ -53,8 +50,25 @@ function Login() {
   return (
     <Grommet theme={theme}>
       <Layer full={true} modal={false} animate={false}>
-        <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
-        {LoginPage()}
+        <Box direction='row'>
+            <Box fill>
+                <Image 
+                    fill={'vertical'}
+                    alignSelf='stretch'
+                    src="./terrain.png"
+                />
+            </Box>
+            <Box fill>
+                <PageHeader
+                    title="Text MMO"
+                    subtitle="A multiplayer text adventure game"
+                    parent={<Anchor label="Learn More" href="https://github.com/beefy/textmmo/wiki"/>}
+                    margin="medium"
+                />
+                <Box margin="medium">
+                    {LoginPage()}
+                </Box>
+            </Box>
         </Box>
       </Layer>
     </Grommet>

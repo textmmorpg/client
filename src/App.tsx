@@ -7,7 +7,8 @@ import {
   TextInput,
   Text,
   BoxExtendedProps,
-  Nav
+  Nav,
+  Layer
 } from 'grommet';
 import { Notes, Github } from 'grommet-icons';
 import './App.css';
@@ -118,30 +119,26 @@ function App() {
   }
 
   return (
-    <Grommet theme={theme} full>
-        <Box fill>
-          <AppBar>
-            <Heading level='3' margin='none'>TextMMO</Heading>
-            <Nav direction='row'>
-              <Button tip='source code' alignSelf='end' icon={<Github />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
-              <Button tip='documentation' alignSelf='end' icon={<Notes />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
-            </Nav>
-          </AppBar>
-          <Box direction='row' flex overflow={{ horizontal: 'hidden' }}>
-            <Box>
-              <Box flex direction='column' overflow={{vertical: "scroll"}}>
-                <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
-                  {LoginPage()}
-                </Box>
-                {Messages()}
-                <div ref={bottomRef} />
-              </Box>
-              <Box as="footer" flex={false} pad={{horizontal: "medium", vertical: "large"}}>
-                {InputBox()}
-              </Box>
-            </Box>
+    <Grommet theme={theme}>
+      <Layer full={true} modal={false} animate={false}>
+        <AppBar>
+          <Heading level='3'>TextMMO</Heading>
+          <Nav direction='row'>
+            <Button tip='source code' alignSelf='end' icon={<Github />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
+            <Button tip='documentation' alignSelf='end' icon={<Notes />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
+          </Nav>
+        </AppBar>
+        <Box fill direction='column' overflow={{vertical: "scroll"}}>
+          <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
+            {LoginPage()}
           </Box>
+          {Messages()}
+          <div ref={bottomRef} />
         </Box>
+        <Box as="footer" flex={false} pad={{horizontal: "medium", vertical: "large"}}>
+          {InputBox()}
+        </Box>
+      </Layer>
     </Grommet>
   );
 }

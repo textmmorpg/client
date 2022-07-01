@@ -13,6 +13,7 @@ import {
 import { Notes, Github } from 'grommet-icons';
 import '../App.css';
 import { AlignSelfType } from "grommet/utils";
+import { useLocation } from "react-router-dom";
 
 const theme = {
   global: {
@@ -45,9 +46,12 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 function Chat() {
   const [value, setValue] = useState<string>();
   const bottomRef = useRef<null | HTMLDivElement>(null);
+  const params = useLocation();
   const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
     return [];
   });
+
+  console.log(params)
 
   useEffect(() => {
     // scroll to bottom every time messages change

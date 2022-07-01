@@ -2,8 +2,7 @@ import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
+  Route
 } from "react-router-dom";
 
 import Chat from "./components/Chat";

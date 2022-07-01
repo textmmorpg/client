@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   Box,
   Grommet,
   Layer,
   PageHeader,
   Anchor,
-  Image
+  Image,
+  Spinner,
+  Text
 } from 'grommet';
 import '../App.css';
 import { GoogleLogin } from '@react-oauth/google';
@@ -81,8 +82,12 @@ function Login() {
                     parent={<Anchor label="Learn More" href="https://github.com/beefy/textmmo/wiki"/>}
                     margin="medium"
                 />
-                <Box margin="medium">
+                <Box fill margin="medium">
                     {LoginPage()}
+                </Box>
+                <Box as='footer' flex={false} direction='row' alignSelf="center" margin={{vertical: 'medium'}}>
+                  <Text>Connecting to server</Text>
+                  <Spinner margin={{horizontal: 'medium'}}/>
                 </Box>
             </Box>
         </Box>

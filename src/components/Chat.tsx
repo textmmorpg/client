@@ -11,7 +11,7 @@ import {
   Layer
 } from 'grommet';
 import { Notes, Github } from 'grommet-icons';
-import './App.css';
+import '../App.css';
 import { AlignSelfType } from "grommet/utils";
 
 const theme = {
@@ -42,7 +42,7 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
   />
 );
 
-function App() {
+function Chat() {
   const [value, setValue] = useState<string>();
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
@@ -126,4 +126,4 @@ function App() {
   );
 }
 
-export default App;
+export default Chat;

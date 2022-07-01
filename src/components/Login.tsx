@@ -1,19 +1,15 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import {
   Box,
-  Page,
-  PageContent,
   Grommet,
   Layer,
-  Text,
-  Heading,
   PageHeader,
   Anchor,
-  Button,
   Image
 } from 'grommet';
-import './App.css';
+import '../App.css';
 import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from "react-router-dom";
 
 
 const theme = {
@@ -33,13 +29,33 @@ const theme = {
 function Login() {
 
 
+  const navigate = useNavigate();
   const LoginPage = () => {
-    //setShow(false) on successful login
+
+    function decodeJwtResponse(token: string) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    
+        return JSON.parse(jsonPayload);
+    };
 
     return <GoogleLogin
       theme={'filled_blue'}
       onSuccess={credentialResponse => {
-        console.log(credentialResponse);
+        console.log('Login Success from Google');
+        const responsePayload = decodeJwtResponse(credentialResponse['credential'] || '');
+        var sso_id = responsePayload.sub;
+        var email = responsePayload.email;
+
+        navigate("/app", {
+          state: {
+            sso_id,
+            email
+          },
+        });
       }}
       onError={() => {
         console.log('Login Failed');

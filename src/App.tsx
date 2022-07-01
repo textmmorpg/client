@@ -19,10 +19,11 @@ import { AlignSelfType } from "grommet/utils";
 const theme = {
   global: {
     colors: {
-      brand: '#228BE6'
+      brand: '#809bce',
+      background: '#b8e0d2',
+      placeholder: '#000000'
     },
     font: {
-      family: 'Roboto',
       size: '18px',
       height: '20px',
     },
@@ -63,7 +64,7 @@ function App() {
         "Type commands to interact with the world and other players. " +
         "For example, type 'walk forward' to walk, 'turn right' to turn, etc. " +
         "Use 'say hello' to say hello to players around you. Use 'look' or 'vibe check' to " +
-        "examine your immediate environment. Sign in to get started!",
+        "examine your immediate environment.",
       align:'start'
     }]));
   }
@@ -120,7 +121,7 @@ function App() {
 
   return (
     <Grommet theme={theme}>
-      <Layer full={true} modal={false} animate={false}>
+      <Layer full={true} modal={false} animate={false} background='background'>
         <AppBar>
           <Heading level='3'>TextMMO</Heading>
           <Nav direction='row'>
@@ -129,9 +130,9 @@ function App() {
           </Nav>
         </AppBar>
         <Box fill direction='column' overflow={{vertical: "scroll"}}>
-          <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
+          {/* <Box direction='column' flex align="center" pad={{horizontal: "xlarge", vertical: "xlarge"}}>
             {LoginPage()}
-          </Box>
+          </Box> */}
           {Messages()}
           <div ref={bottomRef} />
         </Box>

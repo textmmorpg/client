@@ -6,8 +6,7 @@ import {
   Anchor,
   Image,
   Spinner,
-  Text,
-  Button
+  Text
 } from 'grommet';
 import '../App.css';
 import { StatusGood } from 'grommet-icons';
@@ -15,7 +14,6 @@ import { GoogleLogin } from '@react-oauth/google';
 import { Navigate, useNavigate } from "react-router-dom";
 import io, { Socket } from 'socket.io-client'
 import { useEffect, useState } from 'react';
-
 
 const theme = {
     global: {
@@ -80,6 +78,10 @@ function Login() {
         navigate("/app", {
           state: {email, sso_id}
         });
+
+        // the socket on the login page was just for checking the connection
+        // (if the socket can't connect, the server is down, don't let the user log in)
+        socket?.disconnect();
       }}
       onError={() => {
         console.log('Login Failed');

@@ -6,11 +6,15 @@ import {
   Anchor,
   Image,
   Spinner,
-  Text
+  Text,
+  Button
 } from 'grommet';
 import '../App.css';
+import { StatusGood } from 'grommet-icons';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from "react-router-dom";
+import io, { Socket } from 'socket.io-client'
+import { useEffect, useState } from 'react';
 
 
 const theme = {
@@ -18,7 +22,8 @@ const theme = {
       colors: {
         brand: '#809bce',
         background: '#809bce',
-        placeholder: '#000000'
+        placeholder: '#000000',
+        good: '#37eb34'
       },
       font: {
         size: '18px',
@@ -27,22 +32,37 @@ const theme = {
     },
 };
 
+function decodeJwtResponse(token: string) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+};
+
 function Login() {
 
+  const [socket, setSocket] = useState<Socket>();
+  const [connected, setConnected] = useState<boolean>(() => {
+    return false;
+  });
 
-  const navigate = useNavigate();
-  const LoginPage = () => {
+  function connect() {
+    if(window.location.hostname === 'textmmo.com') {
+        setSocket(io('https://textmmo.com/', {
+            secure:true, transports: ['websocket']
+        }));
+    } else {
+        setSocket(io('http://localhost:8080/', {}));
+    }
+  }
+  
+  function LoginPage(navigate: any) {
 
-    function decodeJwtResponse(token: string) {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    
-        return JSON.parse(jsonPayload);
-    };
-
+    if(!connected) return <Spinner margin={{horizontal: 'medium'}}/>;
+  
     return <GoogleLogin
       theme={'filled_blue'}
       onSuccess={credentialResponse => {
@@ -50,7 +70,7 @@ function Login() {
         const responsePayload = decodeJwtResponse(credentialResponse['credential'] || '');
         var sso_id = responsePayload.sub;
         var email = responsePayload.email;
-
+  
         navigate("/app", {
           state: {
             sso_id,
@@ -62,6 +82,25 @@ function Login() {
         console.log('Login Failed');
       }}
     />;
+  }
+  
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    connect();
+  }, []);
+
+  if(!connected && socket) {
+    socket.on('connect', function () {
+      setConnected(true);
+      console.log('Connected');
+    });
+
+    socket.on('disconnect', function () {
+      setConnected(false);
+      console.log('Disconnected');
+    });
   }
 
   return (
@@ -83,11 +122,21 @@ function Login() {
                     margin="medium"
                 />
                 <Box fill margin="medium">
-                    {LoginPage()}
+                    {LoginPage(navigate)}
                 </Box>
                 <Box as='footer' flex={false} direction='row' alignSelf="center" margin={{vertical: 'medium'}}>
-                  <Text>Connecting to server</Text>
-                  <Spinner margin={{horizontal: 'medium'}}/>
+                  {!connected?
+                    <Box direction='row'>
+                      <Text>Connecting to server</Text>
+                      <Spinner margin={{horizontal: 'medium'}}/>
+                    </Box>
+                  :
+                    <Box direction='row'>
+                      <Text margin={{horizontal: 'small'}}>Connected to server</Text>
+                      {<StatusGood color='good'/>}
+                    </Box>
+                  }
+
                 </Box>
             </Box>
         </Box>

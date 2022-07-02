@@ -11,4 +11,5 @@ RUN npm i
 COPY . ./
 # start app
 RUN npm run build
-RUN npx serve -s build -p 3001
+EXPOSE 3001
+CMD npx serve -s build -p 3001

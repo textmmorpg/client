@@ -252,7 +252,7 @@ function Chat() {
 
   function connect(email: string, sso_id: string) {
     if(window.location.hostname === 'textmmo.com') {
-        setSocket(io('https://server.textmmo.com:3000/', {
+        setSocket(io('https://server.textmmo.com/', {
             secure:true, transports: ['websocket']
         }));
     } else {

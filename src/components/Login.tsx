@@ -12,7 +12,7 @@ import {
 import '../App.css';
 import { StatusGood } from 'grommet-icons';
 import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import io, { Socket } from 'socket.io-client'
 import { useEffect, useState } from 'react';
 
@@ -49,6 +49,12 @@ function Login() {
     return false;
   });
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    connect();
+  }, []);
+  
   function connect() {
     if(window.location.hostname === 'textmmo.com') {
         setSocket(io('https://textmmo.com/', {
@@ -72,10 +78,7 @@ function Login() {
         var email = responsePayload.email;
   
         navigate("/app", {
-          state: {
-            sso_id,
-            email
-          },
+          state: {email, sso_id}
         });
       }}
       onError={() => {
@@ -83,13 +86,6 @@ function Login() {
       }}
     />;
   }
-  
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    connect();
-  }, []);
 
   if(!connected && socket) {
     socket.on('connect', function () {

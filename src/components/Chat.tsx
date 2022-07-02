@@ -43,20 +43,29 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
   />
 );
 
+interface CustomizedState {
+  email: string,
+  sso_id: string
+}
+
 function Chat() {
   const [value, setValue] = useState<string>();
   const bottomRef = useRef<null | HTMLDivElement>(null);
-  const params = useLocation();
+  const location = useLocation();
   const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
     return [];
   });
-
-  console.log(params)
 
   useEffect(() => {
     // scroll to bottom every time messages change
     bottomRef.current?.scrollIntoView({behavior: 'smooth'});
   }, [messages]);
+
+  useEffect(() => {
+    var state = location.state as CustomizedState;
+    console.log(state.email);
+    console.log(state.sso_id);
+  }, [])
 
   // add intro message
   if(messages.length === 0) {

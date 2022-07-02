@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, ReactNode } from "react";
+import useState from 'react-usestateref';
 import {
   Box,
   Button,
@@ -15,6 +16,12 @@ import '../App.css';
 import { AlignSelfType } from "grommet/utils";
 import { useLocation } from "react-router-dom";
 import io, { Socket } from 'socket.io-client'
+
+
+interface CustomizedState {
+  email: string,
+  sso_id: string
+}
 
 const theme = {
   global: {
@@ -46,20 +53,20 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
   />
 );
 
-interface CustomizedState {
-  email: string,
-  sso_id: string
-}
-
 function Chat() {
   const [value, setValue] = useState<string>();
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const location = useLocation();
-  const [messages, setMessages] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
+  const [messages, setMessages, messageRef] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
     return [];
   });
 
   const [socket, setSocket] = useState<Socket>();
+  
+  const [loggedIn, setLoggedIn] = useState<boolean>(() => {
+    return false;
+  });
+
   const [connected, setConnected] = useState<boolean>(() => {
     return false;
   });
@@ -71,10 +78,105 @@ function Chat() {
 
   useEffect(() => {
     var state = location.state as CustomizedState;
-    console.log(state.email);
-    console.log(state.sso_id);
     connect(state.email, state.sso_id);
   }, []);
+
+  const addMessage = (name: string, message: string, align: AlignSelfType) => {
+    if(!messageRef) return;
+    setMessages((messageRef.current || []).concat([{
+      message: message,
+      name: name,
+      align: align
+    }]));
+  }
+
+  const sendMessage = (input: string) => {
+    if (input && connected && loggedIn && socket) {
+      input = input.toLowerCase().trim();
+      console.log(input);
+      if(input.startsWith('say')) {
+        socket.emit('say', {msg: input});
+      } else if(input.startsWith('walk forward')) {
+        socket.emit('walk forward', {});
+      } else if(input.startsWith('walk left')) {
+        socket.emit('walk left', {});
+      } else if(input.startsWith('walk right')) {
+        socket.emit('walk right', {});
+      } else if(input.startsWith('swim forward')) {
+        socket.emit('swim forward', {});
+      } else if(input.startsWith('swim left')) {
+        socket.emit('swim left', {});
+      } else if(input.startsWith('swim right')) {
+        socket.emit('swim right', {});
+      } else if(input.startsWith('run forward')) {
+        socket.emit('run forward', {});
+      } else if(input.startsWith('run left')) {
+        socket.emit('run left', {});
+      } else if(input.startsWith('run right')) {
+        socket.emit('run right', {});
+      } else if(input.startsWith('turn left')) {
+        socket.emit('turn left', {});
+      } else if(input.startsWith('turn slight left')) {
+        socket.emit('turn slight left', {});
+      } else if(input.startsWith('turn hard left')) {
+        socket.emit('turn hard left', {});
+      } else if(input.startsWith('turn slight right')) {
+        socket.emit('turn slight right', {});
+      } else if(input.startsWith('turn hard right')) {
+        socket.emit('turn hard right', {});
+      } else if(input.startsWith('turn right')) {
+        socket.emit('turn right', {});
+      } else if(input.startsWith('turn around')) {
+        socket.emit('turn around', {});
+      } else if(input.startsWith('turn to face north')) {
+        socket.emit('turn to face north', {})
+      } else if(input.startsWith('turn to face south')) {
+        socket.emit('turn to face south', {})
+      } else if(input.startsWith('turn to face east')) {
+        socket.emit('turn to face east', {})
+      } else if(input.startsWith('turn to face west')) {
+        socket.emit('turn to face west', {})
+      } else if(input.startsWith('turn a little to the right')) {
+        socket.emit('turn a little to the right', {})
+      } else if(input.startsWith('turn a little to the left')) {
+        socket.emit('turn a little to the left', {})
+      } else if(input.startsWith('look')) {
+        socket.emit('look', {});
+      } else if(input.startsWith('sit down')) {
+        socket.emit('sit down', {});
+      } else if(input.startsWith('lay down')) {
+        socket.emit('lay down', {});
+      } else if(input.startsWith('stand up')) {
+        socket.emit('stand up', {});
+      } else if(input.startsWith('vibe check')) {
+        socket.emit('vibe check')
+      } else if(input.startsWith('commit suicide')) {
+        socket.emit('suicide')
+      } else if(input.startsWith('whisper')) {
+        socket.emit('whisper', {msg: input})
+      } else if(input.startsWith('yell')) {
+        socket.emit('yell', {msg: input})
+      } else if(input.startsWith('teleport to')) {
+        socket.emit('teleport to', {msg: input})
+      } else if(input.startsWith('ban')) {
+        socket.emit('ban', {msg: input})
+      } else if(input.startsWith('check patch notes')) {
+        socket.emit('check patch notes', {})
+      } else if(input.startsWith('punch')) {
+        socket.emit('punch', {});
+      } else if(input.startsWith('report')) {
+        socket.emit('report', {});
+      } else if(input.startsWith('?') || input.startsWith('help')) {
+        // help_message();
+      } else {
+        addMessage(
+          'Server',
+          "Command not found",
+          'start'
+        );
+      }
+    }
+  }
 
   if(!connected && socket) {
     socket.on('connect', function () {
@@ -86,6 +188,50 @@ function Chat() {
       setConnected(false);
       console.log('Disconnected');
     });
+
+    socket.on('message', function(event) {
+      if(event.login_success) {
+        console.log("Login Successful");
+        // stop listening for login success
+        setLoggedIn(true);
+        socket.removeListener('message');
+        socket.on('message', (event) => {
+
+          console.log(event);
+
+          // TODO: display active user count in the UI
+          
+          // if(event.active_users !== null) {
+          //   try {
+          //     // log("Active users: " + event.active_users.toString());
+          //     return;
+          //   } catch {}
+          // }
+
+          if(event.data) {
+            addMessage(
+              'Server',
+              event.data,
+              'start'
+            );
+          }
+        })
+      } else {
+        addMessage(
+          'Server',
+          'Authentication failure',
+          'start'
+        );
+      }
+    })
+  }
+
+  if(connected && !loggedIn && socket) {
+    var state = location.state as CustomizedState;
+    socket.emit('login', {
+      sso_id: state.sso_id,
+      email: state.email
+    })
   }
 
   // add intro message
@@ -132,7 +278,13 @@ function Chat() {
     const handleKeyDown = (event: { key: string; }) => {
       if(messages === undefined) return;
       if (event.key === 'Enter') {
-        setMessages(messages.concat([{name: "You", message: value || '', align: 'end'}]));
+
+        addMessage(
+          'You',
+          value || '',
+          'end'
+        );
+        sendMessage(value || '');
         setValue('');
       }
     }

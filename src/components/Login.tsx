@@ -55,7 +55,7 @@ function Login() {
   
   function connect() {
     if(window.location.hostname === 'textmmo.com') {
-        setSocket(io('https://textmmo.com:3000/', {
+        setSocket(io('https://server.textmmo.com:3000/', {
             secure:true, transports: ['websocket']
         }));
     } else {

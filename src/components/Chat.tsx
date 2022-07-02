@@ -78,8 +78,67 @@ function Chat() {
 
   useEffect(() => {
     var state = location.state as CustomizedState;
-    connect(state.email, state.sso_id);
-  }, []);
+    if(!socket && state.email && state.sso_id) {
+      connect(state.email, state.sso_id);
+    }
+
+    if(!connected && socket) {
+      socket.on('connect', function () {
+        setConnected(true);
+        setLoggedIn(false);
+        console.log('Connected');
+      });
+  
+      socket.on('disconnect', function () {
+        setConnected(false);
+        console.log('Disconnected');
+      });
+  
+      socket.on('message', function(event) {
+        if(event.login_success) {
+          console.log("Login Successful");
+          // stop listening for login success
+          setLoggedIn(true);
+          socket.removeListener('message');
+          socket.on('message', (event) => {
+  
+            console.log(event);
+  
+            // TODO: display active user count in the UI
+            
+            // if(event.active_users !== null) {
+            //   try {
+            //     // log("Active users: " + event.active_users.toString());
+            //     return;
+            //   } catch {}
+            // }
+  
+            if(event.data) {
+              addMessage(
+                'Server',
+                event.data,
+                'start'
+              );
+            }
+          })
+        } else {
+          addMessage(
+            'Server',
+            'Authentication failure',
+            'start'
+          );
+        }
+      })
+    }
+  
+    if(connected && !loggedIn && socket) {
+      var state = location.state as CustomizedState;
+      socket.emit('login', {
+        sso_id: state.sso_id,
+        email: state.email
+      })
+    }  
+  });
 
   const addMessage = (name: string, message: string, align: AlignSelfType) => {
     if(!messageRef) return;
@@ -176,62 +235,6 @@ function Chat() {
         );
       }
     }
-  }
-
-  if(!connected && socket) {
-    socket.on('connect', function () {
-      setConnected(true);
-      console.log('Connected');
-    });
-
-    socket.on('disconnect', function () {
-      setConnected(false);
-      console.log('Disconnected');
-    });
-
-    socket.on('message', function(event) {
-      if(event.login_success) {
-        console.log("Login Successful");
-        // stop listening for login success
-        setLoggedIn(true);
-        socket.removeListener('message');
-        socket.on('message', (event) => {
-
-          console.log(event);
-
-          // TODO: display active user count in the UI
-          
-          // if(event.active_users !== null) {
-          //   try {
-          //     // log("Active users: " + event.active_users.toString());
-          //     return;
-          //   } catch {}
-          // }
-
-          if(event.data) {
-            addMessage(
-              'Server',
-              event.data,
-              'start'
-            );
-          }
-        })
-      } else {
-        addMessage(
-          'Server',
-          'Authentication failure',
-          'start'
-        );
-      }
-    })
-  }
-
-  if(connected && !loggedIn && socket) {
-    var state = location.state as CustomizedState;
-    socket.emit('login', {
-      sso_id: state.sso_id,
-      email: state.email
-    })
   }
 
   // add intro message

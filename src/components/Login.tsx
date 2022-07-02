@@ -75,13 +75,13 @@ function Login() {
         var sso_id = responsePayload.sub;
         var email = responsePayload.email;
   
-        navigate("/app", {
-          state: {email, sso_id}
-        });
-
         // the socket on the login page was just for checking the connection
         // (if the socket can't connect, the server is down, don't let the user log in)
         socket?.disconnect();
+
+        navigate("/app", {
+          state: {email, sso_id}
+        });
       }}
       onError={() => {
         console.log('Login Failed');

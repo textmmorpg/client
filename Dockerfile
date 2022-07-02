@@ -11,4 +11,5 @@ RUN npm i
 # add app
 COPY . ./
 # start app
-CMD ["npm", "start"]
+RUN npm run build
+RUN npx serve -s build

@@ -59,7 +59,7 @@ function Login() {
             secure:true, transports: ['websocket']
         }));
     } else {
-        setSocket(io('http://localhost:3000/', {}));
+        setSocket(io('http://localhost:8080/', {}));
     }
   }
   

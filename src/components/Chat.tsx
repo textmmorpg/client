@@ -102,8 +102,6 @@ function Chat() {
           socket.removeListener('message');
           socket.on('message', (event) => {
   
-            console.log(event);
-  
             // TODO: display active user count in the UI
             
             // if(event.active_users !== null) {
@@ -256,7 +254,7 @@ function Chat() {
             secure:true, transports: ['websocket']
         }));
     } else {
-        setSocket(io('http://localhost:3000/', {}));
+        setSocket(io('http://localhost:8080/', {}));
     }
   }
 

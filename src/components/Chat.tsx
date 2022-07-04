@@ -11,7 +11,13 @@ import {
   Nav,
   Layer
 } from 'grommet';
-import { Notes, Github, Wifi, WifiNone } from 'grommet-icons';
+import {
+  Notes,
+  Github,
+  Wifi,
+  WifiNone,
+  MapLocation
+} from 'grommet-icons';
 import '../App.css';
 import { AlignSelfType } from "grommet/utils";
 import { useLocation } from "react-router-dom";
@@ -55,6 +61,9 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 
 function Chat() {
   const [value, setValue] = useState<string>();
+  const [showMap, setShowMap] = useState<boolean>(() => {
+    return false
+  });
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const location = useLocation();
   const [messages, setMessages, messageRef] = useState<Array<{ name: string, message: string, align: AlignSelfType }>>(() => {
@@ -130,10 +139,10 @@ function Chat() {
     }
   
     if(connected && !loggedIn && socket) {
-      var state = location.state as CustomizedState;
+      var data = location.state as CustomizedState;
       socket.emit('login', {
-        sso_id: state.sso_id,
-        email: state.email
+        sso_id: data.sso_id,
+        email: data.email
       })
     }  
   });
@@ -312,10 +321,24 @@ function Chat() {
               : 
               <Button tip='reconnecting to server' alignSelf='end' icon={<WifiNone color='disconnect'/>}/>
             }
+            <Button tip='map' alignSelf='end' icon={<MapLocation />} onClick={() => setShowMap(true)}/>
             <Button tip='source code' alignSelf='end' icon={<Github />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
             <Button tip='documentation' alignSelf='end' icon={<Notes />} onClick={() => window.location.href = "https://github.com/textmmorpg"}/>
           </Nav>
         </AppBar>
+        {showMap?
+        <Layer
+        onEsc={() => setShowMap(false)}
+        onClickOutside={() => setShowMap(false)}>
+
+            {window.location.hostname === 'textmmo.com'?
+              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe"></iframe>
+            :
+              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe"></iframe>
+            }
+        </Layer>
+        :
+        <Box></Box>}
         <Box fill direction='column' overflow={{vertical: "scroll"}}>
           {Messages()}
           <div ref={bottomRef} />

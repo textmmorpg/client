@@ -330,7 +330,12 @@ function Chat() {
         <Layer
         onEsc={() => setShowMap(false)}
         onClickOutside={() => setShowMap(false)}>
-            <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe"></iframe>
+
+            {window.location.hostname === 'textmmo.com'?
+              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe"></iframe>
+            :
+              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe"></iframe>
+            }
         </Layer>
         :
         <Box></Box>}

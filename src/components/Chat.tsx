@@ -60,6 +60,9 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 );
 
 function Chat() {
+  const [lat, setLat] = useState<number>(() => {return 0});
+  const [long, setLong] = useState<number>(() => {return 0});
+  const [rotation, setRotation] = useState<number>(() => {return 0});
   const [value, setValue] = useState<string>();
   const [showMap, setShowMap] = useState<boolean>(() => {
     return false
@@ -332,9 +335,9 @@ function Chat() {
         onClickOutside={() => setShowMap(false)}>
 
             {window.location.hostname === 'textmmo.com'?
-              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe?lat=0&long=0&angle=0"></iframe>
+              <iframe width='500px' height='500px' title='globe' src={"https://globe.textmmo.com/globe?lat="+{lat}+"&long="+{long}+"&rotation="+{rotation}}></iframe>
             :
-              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe?lat=0&long=0&angle=0"></iframe>
+              <iframe width='500px' height='500px' title='globe' src={"http://localhost:3002/globe?lat="+{lat}+"&long="+{long}+"&rotation="+{rotation}}></iframe>
             }
         </Layer>
         :

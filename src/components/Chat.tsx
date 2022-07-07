@@ -60,6 +60,9 @@ const AppBar = (props: JSX.IntrinsicAttributes & BoxExtendedProps & { children?:
 );
 
 function Chat() {
+  const [lat, setLat] = useState<number>(() => {return 0});
+  const [long, setLong] = useState<number>(() => {return 0});
+  const [rotation, setRotation] = useState<number>(() => {return 0});
   const [value, setValue] = useState<string>();
   const [showMap, setShowMap] = useState<boolean>(() => {
     return false
@@ -95,17 +98,17 @@ function Chat() {
       socket.on('connect', function () {
         setConnected(true);
         setLoggedIn(false);
-        console.log('Connected');
+        // console.log('Connected');
       });
   
       socket.on('disconnect', function () {
         setConnected(false);
-        console.log('Disconnected');
+        // console.log('Disconnected');
       });
   
       socket.on('message', function(event) {
         if(event.login_success) {
-          console.log("Login Successful");
+          // console.log("Login Successful");
           // stop listening for login success
           setLoggedIn(true);
           socket.removeListener('message');
@@ -126,6 +129,12 @@ function Chat() {
                 event.data,
                 'start'
               );
+            }
+
+            if(event.position) {
+              setLat(event.position.lat);
+              setLong(event.position.long);
+              setRotation(event.position.rotation);
             }
           })
         } else {
@@ -159,7 +168,6 @@ function Chat() {
   const sendMessage = (input: string) => {
     if (input && connected && loggedIn && socket) {
       input = input.toLowerCase().trim();
-      console.log(input);
       if(input.startsWith('say')) {
         socket.emit('say', {msg: input});
       } else if(input.startsWith('walk forward')) {
@@ -330,11 +338,10 @@ function Chat() {
         <Layer
         onEsc={() => setShowMap(false)}
         onClickOutside={() => setShowMap(false)}>
-
             {window.location.hostname === 'textmmo.com'?
-              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe?lat=0&long=0&angle=0"></iframe>
+              <iframe width='500px' height='500px' title='globe' src={"https://globe.textmmo.com/globe?lat="+lat+"&long="+long+"&rotation="+rotation}></iframe>
             :
-              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe?lat=0&long=0&angle=0"></iframe>
+              <iframe width='500px' height='500px' title='globe' src={"http://localhost:3002/globe?lat="+lat+"&long="+long+"&rotation="+rotation}></iframe>
             }
         </Layer>
         :

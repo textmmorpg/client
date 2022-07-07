@@ -332,9 +332,9 @@ function Chat() {
         onClickOutside={() => setShowMap(false)}>
 
             {window.location.hostname === 'textmmo.com'?
-              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe"></iframe>
+              <iframe width='500px' height='500px' title='globe' src="https://globe.textmmo.com/globe?lat=0&long=0&angle=0"></iframe>
             :
-              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe"></iframe>
+              <iframe width='500px' height='500px' title='globe' src="http://localhost:3002/globe?lat=0&long=0&angle=0"></iframe>
             }
         </Layer>
         :
